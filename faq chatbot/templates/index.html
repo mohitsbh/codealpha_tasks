@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="header-content">
+                <div class="bot-avatar">🤖</div>
+                <div class="header-text">
+                    <h1>FAQ Assistant</h1>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <p>Hello! 👋 I'm your FAQ Assistant. I can help answer your questions about our services, orders, shipping, returns, and more.</p>
+                    <p>Feel free to ask me anything, or click on a topic below to get started!</p>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="sendQuickMessage('What are your business hours?')">🕐 Business Hours</button>
+                <button class="quick-btn" onclick="sendQuickMessage('How do I track my order?')">📦 Track Order</button>
+                <button class="quick-btn" onclick="sendQuickMessage('What is your return policy?')">↩️ Returns</button>
+                <button class="quick-btn" onclick="sendQuickMessage('Do you offer international shipping?')">🌍 Shipping</button>
+                <button class="quick-btn" onclick="sendQuickMessage('How do I reset my password?')">🔑 Password</button>
+                <button class="quick-btn" onclick="sendQuickMessage('What payment methods do you accept?')">💳 Payment</button>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-container">
+            <form id="chatForm" onsubmit="sendMessage(event)">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        id="userInput" 
+                        placeholder="Type your question here..." 
+                        autocomplete="off"
+                        autofocus
+                    >
+                    <button type="submit" id="sendBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
