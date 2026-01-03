@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Language Translator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body data-theme="light">
+    <div class="page">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">AI POWERED</p>
+                <h1>AI Language Translator</h1>
+                <p class="subhead">Fast, free translations with searchable language pickers.</p>
+            </div>
+            <div class="hero-actions">
+                <button class="ghost" id="theme-toggle" type="button">🌙</button>
+                <!-- <div class="pill">No API key needed</div> -->
+            </div>
+        </header>
+
+        <main class="card">
+            <form id="translate-form">
+                <label class="field-label" for="source-text">Text to translate</label>
+                <textarea id="source-text" name="text" placeholder="Type or paste text here" required></textarea>
+
+                <div class="lang-grid">
+                    <div class="lang-column">
+                        <label class="field-label">From</label>
+                        <input id="source-search" class="search" type="text" placeholder="Search languages" oninput="filterOptions('source-select', this.value, true)">
+                        <select id="source-select" name="source" onchange="syncSelectLabel('source-select', 'source-label')">
+                            <option value="auto" selected>Auto Detect</option>
+                            {% for name, code in languages %}
+                            <option value="{{ code }}">{{ name.title() }}</option>
+                            {% endfor %}
+                        </select>
+                        <p id="source-label" class="hint">Auto Detect</p>
+                    </div>
+
+                    <div class="lang-column">
+                        <label class="field-label">To</label>
+                        <input id="target-search" class="search" type="text" placeholder="Search languages" oninput="filterOptions('target-select', this.value, false)">
+                        <select id="target-select" name="target" onchange="syncSelectLabel('target-select', 'target-label')">
+                            {% for name, code in languages %}
+                            <option value="{{ code }}" {% if name.lower() == 'english' %}selected{% endif %}>{{ name.title() }}</option>
+                            {% endfor %}
+                        </select>
+                        <p id="target-label" class="hint">English</p>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" id="translate-btn">🔄 Translate</button>
+                    <button type="button" class="ghost" onclick="swapLanguages()">⇄ Swap</button>
+                </div>
+            </form>
+
+            <section class="result" id="result-card" hidden>
+                <div class="result-header">
+                    <div>
+                        <p class="eyebrow" id="result-meta">Result</p>
+                        <h2>Translation</h2>
+                    </div>
+                    <button class="ghost" onclick="copyResult()">📋 Copy</button>
+                </div>
+                <p id="translated-text"></p>
+                <p id="status" class="status"></p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const originalSourceOptions = Array.from(document.querySelectorAll('#source-select option')).map(o => ({ text: o.textContent, value: o.value }));
+        const originalTargetOptions = Array.from(document.querySelectorAll('#target-select option')).map(o => ({ text: o.textContent, value: o.value }));
+
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const storedTheme = localStorage.getItem('lt-theme');
+        if (storedTheme) {
+            document.body.setAttribute('data-theme', storedTheme);
+            themeToggle.textContent = storedTheme === 'dark' ? '☀️ Light mode' : '🌙 Dark mode';
+        }
+        themeToggle.addEventListener('click', () => {
+            const current = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', next);
+            localStorage.setItem('lt-theme', next);
+            themeToggle.textContent = next === 'dark' ? '☀️ Light mode' : '🌙 Dark mode';
+        });
+
+        function filterOptions(selectId, query, includeAuto) {
+            const select = document.getElementById(selectId);
+            const sourceArray = selectId === 'source-select' ? originalSourceOptions : originalTargetOptions;
+            const normalized = (query || '').toLowerCase();
+
+            const filtered = sourceArray.filter(opt => opt.text.toLowerCase().includes(normalized));
+            const finalOptions = filtered.length ? filtered : sourceArray;
+
+            select.innerHTML = '';
+            if (includeAuto) {
+                const auto = sourceArray.find(o => o.value === 'auto');
+                if (auto) {
+                    const opt = document.createElement('option');
+                    opt.value = auto.value;
+                    opt.textContent = auto.text;
+                    select.appendChild(opt);
+                }
+            }
+
+            finalOptions.forEach(optData => {
+                if (!includeAuto && optData.value === 'auto') return;
+                const opt = document.createElement('option');
+                opt.value = optData.value;
+                opt.textContent = optData.text;
+                select.appendChild(opt);
+            });
+        }
+
+        function syncSelectLabel(selectId, labelId) {
+            const select = document.getElementById(selectId);
+            const label = document.getElementById(labelId);
+            label.textContent = select.options[select.selectedIndex].textContent;
+        }
+
+        function swapLanguages() {
+            const sourceSelect = document.getElementById('source-select');
+            const targetSelect = document.getElementById('target-select');
+            if (sourceSelect.value === 'auto') {
+                alert('Cannot swap when source is Auto Detect.');
+                return;
+            }
+            const tempValue = sourceSelect.value;
+            const tempText = sourceSelect.options[sourceSelect.selectedIndex].textContent;
+
+            sourceSelect.value = targetSelect.value;
+            targetSelect.value = tempValue;
+
+            document.getElementById('source-label').textContent = targetSelect.options[targetSelect.selectedIndex].textContent;
+            document.getElementById('target-label').textContent = tempText;
+        }
+
+        async function copyResult() {
+            const text = document.getElementById('translated-text').textContent;
+            if (!text) return;
+            await navigator.clipboard.writeText(text);
+            const status = document.getElementById('status');
+            status.textContent = 'Copied to clipboard';
+            status.classList.add('ok');
+            setTimeout(() => status.textContent = '', 1500);
+        }
+
+        document.getElementById('translate-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('translate-btn');
+            btn.disabled = true;
+            btn.textContent = 'Translating…';
+
+            const payload = {
+                text: document.getElementById('source-text').value,
+                source: document.getElementById('source-select').value,
+                target: document.getElementById('target-select').value
+            };
+
+            try {
+                const res = await fetch('/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                const resultCard = document.getElementById('result-card');
+                const translated = document.getElementById('translated-text');
+                const status = document.getElementById('status');
+
+                if (!res.ok) {
+                    translated.textContent = '';
+                    status.textContent = data.error || 'Translation failed';
+                    status.classList.remove('ok');
+                } else {
+                    translated.textContent = data.text;
+                    status.textContent = `${data.source_name} → ${data.target_name}`;
+                    status.classList.add('ok');
+                }
+
+                resultCard.hidden = false;
+            } catch (err) {
+                const status = document.getElementById('status');
+                status.textContent = 'Network error';
+                status.classList.remove('ok');
+                document.getElementById('result-card').hidden = false;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Translate';
+            }
+        });
+
+        // Initialize labels
+        syncSelectLabel('source-select', 'source-label');
+        syncSelectLabel('target-select', 'target-label');
+    </script>
+</body>
+</html>
