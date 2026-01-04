@@ -1,0 +1,35 @@
+# Object Detection & Tracking Configuration
+
+# Video source (0 for webcam, or path to video file)
+video_source: 0
+
+# Detection settings
+detection:
+  model: "yolov8n.pt"  # yolov8n, yolov8s, yolov8m, yolov8l, yolov8x
+  confidence_threshold: 0.5
+  iou_threshold: 0.45
+  classes: null  # null for all classes, or list like [0, 1, 2] for specific classes (0=person)
+  device: "auto"  # auto, cpu, cuda, mps
+
+# Tracker settings
+tracker:
+  type: "sort"  # sort or deepsort
+  max_age: 30  # Maximum frames to keep alive without matching
+  min_hits: 3  # Minimum hits before track is confirmed
+  iou_threshold: 0.3
+
+# Display settings
+display:
+  show_fps: true
+  show_labels: true
+  show_confidence: true
+  show_track_id: true
+  bbox_thickness: 2
+  font_scale: 0.6
+  window_name: "Object Detection & Tracking"
+
+# Output settings
+output:
+  save_video: false
+  output_path: "outputs/output.mp4"
+  fps: 30
