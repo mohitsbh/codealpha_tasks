@@ -1,29 +1,43 @@
 # 🤖 FAQ Chatbot
 
-A Natural Language Processing (NLP) based chatbot that answers Frequently Asked Questions. This project uses TF-IDF vectorization and cosine similarity to match user queries with the most relevant FAQ answers.
+A sophisticated Natural Language Processing (NLP) based chatbot that intelligently answers Frequently Asked Questions. This project uses TF-IDF vectorization and cosine similarity to match user queries with the most relevant FAQ answers from a customizable database.
 
 ## 📋 Features
 
-- **NLP-Powered Matching**: Uses TF-IDF and cosine similarity for intelligent question matching
-- **Text Preprocessing**: Includes tokenization, lemmatization, and stop word removal
-- **Customizable FAQs**: Easy to add, modify, or remove FAQ entries via JSON file
-- **Greeting & Farewell Detection**: Natural conversation flow with greetings and goodbyes
-- **Help System**: Users can ask for help to see available topics
-- **Confidence Scoring**: Shows matched question when confidence is moderate
-- **Category Organization**: FAQs organized by categories for easy management
+- **NLP-Powered Matching**: Uses TF-IDF (Term Frequency-Inverse Document Frequency) and cosine similarity for intelligent question matching
+- **Text Preprocessing**: Includes tokenization, lemmatization, and stop word removal for robust text processing
+- **Customizable FAQs**: Easy to add, modify, or remove FAQ entries via JSON file format
+- **Greeting & Farewell Detection**: Natural conversation flow with automatic greeting and goodbye responses
+- **Help System**: Users can request help to see available topics and categories
+- **Confidence Scoring**: Shows matched questions with confidence metrics to ensure accuracy
+- **Category Organization**: FAQs organized by categories for intuitive knowledge management
+- **Interactive CLI**: User-friendly command-line interface for easy interaction
+
+## 📦 Tech Stack
+
+- **Python 3.8+**
+- **NLTK**: Natural Language Toolkit for text processing
+- **scikit-learn**: Machine learning library for TF-IDF and similarity computations
+- **NumPy**: Numerical computing library
 
 ## 🗂️ Project Structure
 
 ```
-faq chatbot/
+codealpha_faq chatbot/
 ├── data/
-│   └── faqs.json          # FAQ questions and answers database
+│   └── faqs.json              # FAQ questions and answers database (JSON format)
 ├── src/
-│   ├── __init__.py        # Package initialization
-│   ├── chatbot.py         # Core chatbot logic with NLP
-│   └── main.py            # CLI application entry point
-├── requirements.txt       # Python dependencies
-└── README.md             # Project documentation
+│   ├── __init__.py            # Package initialization
+│   ├── chatbot.py             # Core chatbot logic with NLP algorithms
+│   ├── app.py                 # Flask web application
+│   └── main.py                # CLI application entry point
+├── static/
+│   ├── style.css              # Web UI styling
+│   └── script.js              # Web UI JavaScript
+├── templates/
+│   └── index.html             # Web UI HTML template
+├── requirements.txt           # Python dependencies
+└── README.md                  # Project documentation
 ```
 
 ## 🚀 Getting Started
@@ -37,7 +51,7 @@ faq chatbot/
 
 1. **Navigate to the project directory**:
    ```bash
-   cd "faq chatbot"
+   cd "codealpha_faq chatbot"
    ```
 
 2. **Create a virtual environment** (recommended):
